@@ -45,7 +45,7 @@ func (v ValidatorIndex) HashTreeRoot() ([32]byte, error) {
 }
 
 // HashWithDefaultHasher hashes a HashRoot object with a Hasher from the default HasherPool.
-func (v ValidatorIndex) ValidatorIndex(hh *fssz.Hasher) error {
+func (v ValidatorIndex) HashTreeRootWith(hh *fssz.Hasher) error {
 	hh.PutUint64(uint64(v))
 	return nil
 }
