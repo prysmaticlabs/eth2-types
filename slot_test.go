@@ -33,4 +33,3 @@ func TestSlot_Casting(t *testing.T) {
 		}
 	})
 }
-
