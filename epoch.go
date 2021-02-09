@@ -67,11 +67,7 @@ func (e Epoch) SafeAdd(x uint64) (Epoch, error) {
 // AddEpoch increases epoch using another epoch value.
 // In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) AddEpoch(x Epoch) Epoch {
-	res, err := e.SafeAddEpoch(x)
-	if err != nil {
-		panic(err.Error())
-	}
-	return res
+	return e.Add(uint64(x))
 }
 
 // SafeAddEpoch increases epoch using another epoch value.
