@@ -81,11 +81,20 @@ func (e Epoch) SafeAddEpoch(x Epoch) (Epoch, error) {
 }
 
 // Sub subtracts x from the epoch.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Sub(x uint64) Epoch {
-	if uint64(e) < x {
-		panic("underflow")
+	res, err := e.SafeSub(x)
+	if err != nil {
+		panic(err.Error())
 	}
-	return Epoch(uint64(e) - x)
+	return res
+}
+
+// SafeSub subtracts x from the epoch.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeSub(x uint64) (Epoch, error) {
+	res, err := Sub64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // Mod returns result of `epoch % x`.

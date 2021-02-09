@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	ErrMulOverflow = errors.New("multiplication overflows")
-	ErrAddOverflow = errors.New("addition overflows")
-	ErrDivByZero   = errors.New("integer divide by zero")
+	ErrMulOverflow  = errors.New("multiplication overflows")
+	ErrAddOverflow  = errors.New("addition overflows")
+	ErrSubUnderflow = errors.New("subtraction underflow")
+	ErrDivByZero    = errors.New("integer divide by zero")
 )
 
 // MaxSlot returns the larger of the two slots.
@@ -70,6 +71,15 @@ func Add64(a, b uint64) (uint64, error) {
 	res, carry := bits.Add64(a, b, 0 /* carry */)
 	if carry > 0 {
 		return 0, ErrAddOverflow
+	}
+	return res, nil
+}
+
+// Sub64 subtracts two 64-bit unsigned integers and checks for errors.
+func Sub64(a, b uint64) (uint64, error) {
+	res, borrow := bits.Sub64(a, b, 0 /* borrow */)
+	if borrow > 0 {
+		return 0, ErrSubUnderflow
 	}
 	return res, nil
 }

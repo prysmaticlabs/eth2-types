@@ -122,6 +122,42 @@ func TestEpoch_Add(t *testing.T) {
 	}
 }
 
+func TestEpoch_Sub(t *testing.T) {
+	tests := []struct {
+		a, b     uint64
+		res      types.Epoch
+		panicMsg string
+	}{
+		{a: 1, b: 0, res: 1},
+		{a: 0, b: 1, res: 0, panicMsg: types.ErrSubUnderflow.Error()},
+		{a: 1 << 32, b: 1, res: 4294967295},
+		{a: 1 << 32, b: 100, res: 4294967196},
+		{a: 1 << 31, b: 1 << 31, res: 0},
+		{a: 1 << 63, b: 1 << 63, res: 0},
+		{a: 1 << 63, b: 1, res: 9223372036854775807},
+		{a: math.MaxUint64, b: math.MaxUint64, res: 0},
+		{a: math.MaxUint64 - 1, b: math.MaxUint64, res: 0, panicMsg: types.ErrSubUnderflow.Error()},
+		{a: math.MaxUint64, b: 0, res: math.MaxUint64},
+		{a: 1 << 63, b: 2, res: 9223372036854775806},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("Epoch(%v).Sub(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
+			var res types.Epoch
+			if tt.panicMsg != "" {
+				assertPanic(t, tt.panicMsg, func() {
+					res = types.Epoch(tt.a).Sub(tt.b)
+				})
+			} else {
+				res = types.Epoch(tt.a).Sub(tt.b)
+			}
+			if tt.res != res {
+				t.Errorf("Epoch.Sub() = %v, want %v", res, tt.res)
+			}
+		})
+	}
+}
+
 func assertPanic(t *testing.T, panicMessage string, f func()) {
 	defer func() {
 		if r := recover(); r == nil {
