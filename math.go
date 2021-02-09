@@ -5,6 +5,11 @@ import (
 	"math/bits"
 )
 
+var (
+	ErrMulOverflow = errors.New("multiplication overflows")
+	ErrAddOverflow = errors.New("addition overflows")
+)
+
 // MaxSlot returns the larger of the two slots.
 func MaxSlot(a, b Slot) Slot {
 	if a > b {
@@ -43,7 +48,7 @@ func MinEpoch(a, b Epoch) Epoch {
 func Mul64(a, b uint64) (uint64, error) {
 	overflows, val := bits.Mul64(a, b)
 	if overflows > 0 {
-		return 0, errors.New("multiplication overflows")
+		return 0, ErrMulOverflow
 	}
 	return val, nil
 }
@@ -54,7 +59,7 @@ func Mul64(a, b uint64) (uint64, error) {
 func Add64(a, b uint64) (uint64, error) {
 	res, carry := bits.Add64(a, b, 0 /* carry */)
 	if carry > 0 {
-		return 0, errors.New("addition overflows")
+		return 0, ErrAddOverflow
 	}
 	return res, nil
 }

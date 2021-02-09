@@ -14,8 +14,20 @@ var _ fssz.Unmarshaler = (*Epoch)(nil)
 type Epoch uint64
 
 // Mul multiplies epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Mul(x uint64) Epoch {
-	return Epoch(uint64(e) * x)
+	res, err := e.SafeMul(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
+}
+
+// SafeMul multiplies epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeMul(x uint64) (Epoch, error) {
+	res, err := Mul64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // Div divides epoch by x.
