@@ -84,7 +84,7 @@ func TestSlot_Mul(t *testing.T) {
 		})
 		t.Run(fmt.Sprintf("Slot(%v).SafeMulSlot(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			res, err := types.Slot(tt.a).SafeMulSlot(types.Slot(tt.b))
-			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg){
+			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg) {
 				t.Errorf("Expected error not thrown, wanted: %v, got: %v", tt.panicMsg, err)
 				return
 			}
@@ -140,7 +140,7 @@ func TestSlot_Div(t *testing.T) {
 		})
 		t.Run(fmt.Sprintf("Slot(%v).SafeDivSlot(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			res, err := types.Slot(tt.a).SafeDivSlot(types.Slot(tt.b))
-			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg){
+			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg) {
 				t.Errorf("Expected error not thrown, wanted: %v, got: %v", tt.panicMsg, err)
 				return
 			}
@@ -197,7 +197,7 @@ func TestSlot_Add(t *testing.T) {
 		})
 		t.Run(fmt.Sprintf("Slot(%v).SafeAddSlot(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			res, err := types.Slot(tt.a).SafeAddSlot(types.Slot(tt.b))
-			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg){
+			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg) {
 				t.Errorf("Expected error not thrown, wanted: %v, got: %v", tt.panicMsg, err)
 				return
 			}
@@ -256,7 +256,7 @@ func TestSlot_Sub(t *testing.T) {
 		})
 		t.Run(fmt.Sprintf("Slot(%v).SafeSubSlot(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			res, err := types.Slot(tt.a).SafeSubSlot(types.Slot(tt.b))
-			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg){
+			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg) {
 				t.Errorf("Expected error not thrown, wanted: %v, got: %v", tt.panicMsg, err)
 				return
 			}
@@ -317,7 +317,7 @@ func TestSlot_Mod(t *testing.T) {
 		})
 		t.Run(fmt.Sprintf("Slot(%v).SafeModSlot(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			res, err := types.Slot(tt.a).SafeModSlot(types.Slot(tt.b))
-			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg){
+			if tt.panicMsg != "" && (err == nil || err.Error() != tt.panicMsg) {
 				t.Errorf("Expected error not thrown, wanted: %v, got: %v", tt.panicMsg, err)
 				return
 			}
