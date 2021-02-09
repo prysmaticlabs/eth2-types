@@ -98,13 +98,20 @@ func (e Epoch) SafeSub(x uint64) (Epoch, error) {
 }
 
 // Mod returns result of `epoch % x`.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Mod(x uint64) Epoch {
-	return Epoch(uint64(e) % x)
+	res, err := e.SafeMod(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
 }
 
-// Mod returns result of `epoch % slot`.
-func (e Epoch) ModSlot(x Slot) Epoch {
-	return Epoch(uint64(e) % uint64(x))
+// SafeMod returns result of `epoch % x`.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeMod(x uint64) (Epoch, error) {
+	res, err := Mod64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // HashTreeRoot returns calculated hash root.

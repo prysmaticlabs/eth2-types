@@ -83,3 +83,12 @@ func Sub64(a, b uint64) (uint64, error) {
 	}
 	return res, nil
 }
+
+// Mod64 finds remainder of division of two 64-bit unsigned integers and checks for errors.
+func Mod64(a, b uint64) (uint64, error) {
+	if b == 0 {
+		return 0, ErrDivByZero
+	}
+	_, val := bits.Div64(0, a, b)
+	return val, nil
+}

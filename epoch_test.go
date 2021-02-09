@@ -158,6 +158,44 @@ func TestEpoch_Sub(t *testing.T) {
 	}
 }
 
+func TestEpoch_Mod(t *testing.T) {
+	tests := []struct {
+		a, b     uint64
+		res      types.Epoch
+		panicMsg string
+	}{
+		{a: 1, b: 0, res: 0, panicMsg: types.ErrDivByZero.Error()},
+		{a: 0, b: 1, res: 0},
+		{a: 1 << 32, b: 1 << 32, res: 0},
+		{a: 429496729600, b: 1 << 32, res: 0},
+		{a: 9223372036854775808, b: 1 << 32, res: 0},
+		{a: 1 << 32, b: 1 << 32, res: 0},
+		{a: 9223372036854775808, b: 1 << 62, res: 0},
+		{a: 9223372036854775808, b: 1 << 63, res: 0},
+		{a: 1 << 32, b: 17, res: 1},
+		{a: 1 << 32, b: 19, res: (1 << 32) % 19},
+		{a: math.MaxUint64, b: math.MaxUint64, res: 0},
+		{a: 1 << 63, b: 2, res: 0},
+		{a: 1<<63 + 1, b: 2, res: 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("Epoch(%v).Mod(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
+			var res types.Epoch
+			if tt.panicMsg != "" {
+				assertPanic(t, tt.panicMsg, func() {
+					res = types.Epoch(tt.a).Mod(tt.b)
+				})
+			} else {
+				res = types.Epoch(tt.a).Mod(tt.b)
+			}
+			if tt.res != res {
+				t.Errorf("Epoch.Mod() = %v, want %v", res, tt.res)
+			}
+		})
+	}
+}
+
 func assertPanic(t *testing.T, panicMessage string, f func()) {
 	defer func() {
 		if r := recover(); r == nil {
