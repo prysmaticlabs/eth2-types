@@ -48,8 +48,20 @@ func (e Epoch) SafeDiv(x uint64) (Epoch, error) {
 }
 
 // Add increases epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Add(x uint64) Epoch {
-	return Epoch(uint64(e) + x)
+	res, err := e.SafeAdd(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
+}
+
+// SafeAdd increases epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeAdd(x uint64) (Epoch, error) {
+	res, err := Add64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // AddSlot increases epoch using slot value.
