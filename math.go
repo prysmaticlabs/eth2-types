@@ -8,6 +8,7 @@ import (
 var (
 	ErrMulOverflow = errors.New("multiplication overflows")
 	ErrAddOverflow = errors.New("addition overflows")
+	ErrDivByZero   = errors.New("integer divide by zero")
 )
 
 // MaxSlot returns the larger of the two slots.
@@ -42,7 +43,7 @@ func MinEpoch(a, b Epoch) Epoch {
 	return b
 }
 
-// Mul64 multiples 2 64-bit unsigned integers and checks if they
+// Mul64 multiples two 64-bit unsigned integers and checks if they
 // lead to an overflow. If they do not, it returns the result
 // without an error.
 func Mul64(a, b uint64) (uint64, error) {
@@ -53,7 +54,16 @@ func Mul64(a, b uint64) (uint64, error) {
 	return val, nil
 }
 
-// Add64 adds 2 64-bit unsigned integers and checks if they
+// Div64 divides two 64-bit unsigned integers and checks for errors.
+func Div64(a, b uint64) (uint64, error) {
+	if b == 0 {
+		return 0, ErrDivByZero
+	}
+	val, _ := bits.Div64(0, a, b)
+	return val, nil
+}
+
+// Add64 adds two 64-bit unsigned integers and checks if they
 // lead to an overflow. If they do not, it returns the result
 // without an error.
 func Add64(a, b uint64) (uint64, error) {

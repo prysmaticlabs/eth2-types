@@ -24,22 +24,11 @@ func TestEpoch_Mul(t *testing.T) {
 		{a: 1 << 63, b: 2, res: 0, panicMsg: types.ErrMulOverflow.Error()},
 	}
 
-	assertPanic := func(panicMessage string, f func()) {
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("Expected panic not thrown")
-			} else if r != panicMessage {
-				t.Errorf("Unexpected panic thrown, want: %#v, got: %#v", panicMessage, r)
-			}
-		}()
-		f()
-	}
-
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%v x %v = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			var res types.Epoch
 			if tt.panicMsg != "" {
-				assertPanic(tt.panicMsg, func() {
+				assertPanic(t, tt.panicMsg, func() {
 					res = types.Epoch(tt.a).Mul(tt.b)
 				})
 			} else {
@@ -50,4 +39,48 @@ func TestEpoch_Mul(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestEpoch_Div(t *testing.T) {
+	tests := []struct {
+		a, b     uint64
+		res      types.Epoch
+		panicMsg string
+	}{
+		{a: 0, b: 1, res: 0},
+		{a: 1, b: 0, res: 0, panicMsg: types.ErrDivByZero.Error()},
+		{a: 1 << 32, b: 1 << 32, res: 1},
+		{a: 429496729600, b: 1 << 32, res: 100},
+		{a: 9223372036854775808, b: 1 << 32, res: 1 << 31},
+		{a: 1 << 32, b: 1 << 32, res: 1},
+		{a: 9223372036854775808, b: 1 << 62, res: 2},
+		{a: 9223372036854775808, b: 1 << 63, res: 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("%v x %v = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
+			var res types.Epoch
+			if tt.panicMsg != "" {
+				assertPanic(t, tt.panicMsg, func() {
+					res = types.Epoch(tt.a).Div(tt.b)
+				})
+			} else {
+				res = types.Epoch(tt.a).Div(tt.b)
+			}
+			if tt.res != res {
+				t.Errorf("Epoch.Div() = %v, want %v", res, tt.res)
+			}
+		})
+	}
+}
+
+func assertPanic(t *testing.T, panicMessage string, f func()) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected panic not thrown")
+		} else if r != panicMessage {
+			t.Errorf("Unexpected panic thrown, want: %#v, got: %#v", panicMessage, r)
+		}
+	}()
+	f()
 }

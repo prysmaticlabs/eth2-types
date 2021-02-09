@@ -31,11 +31,20 @@ func (e Epoch) SafeMul(x uint64) (Epoch, error) {
 }
 
 // Div divides epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Div(x uint64) Epoch {
-	if x == 0 {
-		panic("divbyzero")
+	res, err := e.SafeDiv(x)
+	if err != nil {
+		panic(err.Error())
 	}
-	return Epoch(uint64(e) / x)
+	return res
+}
+
+// SafeDiv divides epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeDiv(x uint64) (Epoch, error) {
+	res, err := Div64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // Add increases epoch by x.
