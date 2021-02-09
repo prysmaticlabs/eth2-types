@@ -26,7 +26,7 @@ func TestEpoch_Mul(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%v x %v = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Epoch(%v).Mul(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			var res types.Epoch
 			if tt.panicMsg != "" {
 				assertPanic(t, tt.panicMsg, func() {
@@ -59,7 +59,7 @@ func TestEpoch_Div(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%v x %v = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Epoch(%v).Div(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			var res types.Epoch
 			if tt.panicMsg != "" {
 				assertPanic(t, tt.panicMsg, func() {
@@ -93,7 +93,7 @@ func TestEpoch_Add(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%v x %v = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Epoch(%v).Add(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
 			var res types.Epoch
 			if tt.panicMsg != "" {
 				assertPanic(t, tt.panicMsg, func() {
@@ -104,6 +104,19 @@ func TestEpoch_Add(t *testing.T) {
 			}
 			if tt.res != res {
 				t.Errorf("Epoch.Add() = %v, want %v", res, tt.res)
+			}
+		})
+		t.Run(fmt.Sprintf("Epoch(%v).AddEpoch(%v) = %v", tt.a, tt.b, tt.res), func(t *testing.T) {
+			var res types.Epoch
+			if tt.panicMsg != "" {
+				assertPanic(t, tt.panicMsg, func() {
+					res = types.Epoch(tt.a).AddEpoch(types.Epoch(tt.b))
+				})
+			} else {
+				res = types.Epoch(tt.a).AddEpoch(types.Epoch(tt.b))
+			}
+			if tt.res != res {
+				t.Errorf("Epoch.AddEpoch() = %v, want %v", res, tt.res)
 			}
 		})
 	}

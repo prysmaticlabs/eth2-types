@@ -64,14 +64,20 @@ func (e Epoch) SafeAdd(x uint64) (Epoch, error) {
 	return Epoch(res), err
 }
 
-// AddSlot increases epoch using slot value.
-func (e Epoch) AddSlot(x Slot) Epoch {
-	return e + Epoch(x)
+// AddEpoch increases epoch using another epoch value.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
+func (e Epoch) AddEpoch(x Epoch) Epoch {
+	res, err := e.SafeAddEpoch(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
 }
 
-// AddEpoch increases epoch using another epoch value.
-func (e Epoch) AddEpoch(x Epoch) Epoch {
-	return Epoch(uint64(e) + uint64(x))
+// SafeAddEpoch increases epoch using another epoch value.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeAddEpoch(x Epoch) (Epoch, error) {
+	return e.SafeAdd(uint64(x))
 }
 
 // Sub subtracts x from the epoch.
