@@ -14,96 +14,148 @@ var _ fssz.Unmarshaler = (*Slot)(nil)
 type Slot uint64
 
 // Mul multiplies slot by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) Mul(x uint64) Slot {
-	return Slot(uint64(s) * x)
+	res, err := s.SafeMul(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
+}
+
+// SafeMul multiplies slot by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeMul(x uint64) (Slot, error) {
+	res, err := Mul64(uint64(s), x)
+	return Slot(res), err
 }
 
 // MulSlot multiplies slot by another slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) MulSlot(x Slot) Slot {
-	return s * x
+	return s.Mul(uint64(x))
 }
 
-// MulEpoch multiplies slot using epoch value.
-func (s Slot) MulEpoch(x Epoch) Slot {
-	return Slot(uint64(s) * uint64(x))
+// SafeMulSlot multiplies slot by another slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeMulSlot(x Slot) (Slot, error) {
+	return s.SafeMul(uint64(x))
 }
 
 // Div divides slot by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) Div(x uint64) Slot {
-	if x == 0 {
-		panic("divbyzero")
+	res, err := s.SafeDiv(x)
+	if err != nil {
+		panic(err.Error())
 	}
-	return Slot(uint64(s) / x)
+	return res
+}
+
+// SafeDiv divides slot by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeDiv(x uint64) (Slot, error) {
+	res, err := Div64(uint64(s), x)
+	return Slot(res), err
 }
 
 // DivSlot divides slot by another slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) DivSlot(x Slot) Slot {
-	if x == 0 {
-		panic("divbyzero")
-	}
-	return s / x
+	return s.Div(uint64(x))
 }
 
-// DivEpoch divides slot using epoch value.
-func (s Slot) DivEpoch(x Epoch) Slot {
-	if x == 0 {
-		panic("divbyzero")
-	}
-	return Slot(uint64(s) / uint64(x))
+// SafeDivSlot divides slot by another slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeDivSlot(x Slot) (Slot, error) {
+	return s.SafeDiv(uint64(x))
 }
 
 // Add increases slot by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) Add(x uint64) Slot {
-	return Slot(uint64(s) + x)
+	res, err := s.SafeAdd(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
+}
+
+// SafeAdd increases slot by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeAdd(x uint64) (Slot, error) {
+	res, err := Add64(uint64(s), x)
+	return Slot(res), err
 }
 
 // AddSlot increases slot by another slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) AddSlot(x Slot) Slot {
-	return s + x
+	return s.Add(uint64(x))
 }
 
-// AddEpoch increases slot using epoch value.
-func (s Slot) AddEpoch(x Epoch) Slot {
-	return Slot(uint64(s) + uint64(x))
+// SafeAddSlot increases slot by another slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeAddSlot(x Slot) (Slot, error) {
+	return s.SafeAdd(uint64(x))
 }
 
 // Sub subtracts x from the slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) Sub(x uint64) Slot {
-	if uint64(s) < x {
-		panic("underflow")
+	res, err := s.SafeSub(x)
+	if err != nil {
+		panic(err.Error())
 	}
-	return Slot(uint64(s) - x)
+	return res
+}
+
+// SafeSub subtracts x from the slot.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeSub(x uint64) (Slot, error) {
+	res, err := Sub64(uint64(s), x)
+	return Slot(res), err
 }
 
 // SubSlot finds difference between two slot values.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) SubSlot(x Slot) Slot {
-	if s < x {
-		panic("underflow")
-	}
-	return s - x
+	return s.Sub(uint64(x))
 }
 
-// SubEpoch subtracts value of epoch type from the slot.
-func (s Slot) SubEpoch(x Epoch) Slot {
-	if uint64(s) < uint64(x) {
-		panic("underflow")
-	}
-	return Slot(uint64(s) - uint64(x))
+// SafeSubSlot finds difference between two slot values.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeSubSlot(x Slot) (Slot, error) {
+	return s.SafeSub(uint64(x))
 }
 
 // Mod returns result of `slot % x`.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) Mod(x uint64) Slot {
-	return Slot(uint64(s) % x)
+	res, err := s.SafeMod(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
+}
+
+// SafeMod returns result of `slot % x`.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeMod(x uint64) (Slot, error) {
+	res, err := Mod64(uint64(s), x)
+	return Slot(res), err
 }
 
 // ModSlot returns result of `slot % slot`.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (s Slot) ModSlot(x Slot) Slot {
-	return s % x
+	return s.Mod(uint64(x))
 }
 
-// ModEpoch returns result of `slot % epoch`.
-func (s Slot) ModEpoch(x Epoch) Slot {
-	return Slot(uint64(s) % uint64(x))
+// SafeModSlot returns result of `slot % slot`.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (s Slot) SafeModSlot(x Slot) (Slot, error) {
+	return s.SafeMod(uint64(x))
 }
 
 // HashTreeRoot returns calculated hash root.
