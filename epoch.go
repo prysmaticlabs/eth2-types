@@ -14,49 +14,100 @@ var _ fssz.Unmarshaler = (*Epoch)(nil)
 type Epoch uint64
 
 // Mul multiplies epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Mul(x uint64) Epoch {
-	return Epoch(uint64(e) * x)
+	res, err := e.SafeMul(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
+}
+
+// SafeMul multiplies epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeMul(x uint64) (Epoch, error) {
+	res, err := Mul64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // Div divides epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Div(x uint64) Epoch {
-	if x == 0 {
-		panic("divbyzero")
+	res, err := e.SafeDiv(x)
+	if err != nil {
+		panic(err.Error())
 	}
-	return Epoch(uint64(e) / x)
+	return res
+}
+
+// SafeDiv divides epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeDiv(x uint64) (Epoch, error) {
+	res, err := Div64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // Add increases epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Add(x uint64) Epoch {
-	return Epoch(uint64(e) + x)
+	res, err := e.SafeAdd(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
 }
 
-// AddSlot increases epoch using slot value.
-func (e Epoch) AddSlot(x Slot) Epoch {
-	return e + Epoch(x)
+// SafeAdd increases epoch by x.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeAdd(x uint64) (Epoch, error) {
+	res, err := Add64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // AddEpoch increases epoch using another epoch value.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) AddEpoch(x Epoch) Epoch {
-	return Epoch(uint64(e) + uint64(x))
+	return e.Add(uint64(x))
+}
+
+// SafeAddEpoch increases epoch using another epoch value.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeAddEpoch(x Epoch) (Epoch, error) {
+	return e.SafeAdd(uint64(x))
 }
 
 // Sub subtracts x from the epoch.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Sub(x uint64) Epoch {
-	if uint64(e) < x {
-		panic("underflow")
+	res, err := e.SafeSub(x)
+	if err != nil {
+		panic(err.Error())
 	}
-	return Epoch(uint64(e) - x)
+	return res
+}
+
+// SafeSub subtracts x from the epoch.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeSub(x uint64) (Epoch, error) {
+	res, err := Sub64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // Mod returns result of `epoch % x`.
+// In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
 func (e Epoch) Mod(x uint64) Epoch {
-	return Epoch(uint64(e) % x)
+	res, err := e.SafeMod(x)
+	if err != nil {
+		panic(err.Error())
+	}
+	return res
 }
 
-// Mod returns result of `epoch % slot`.
-func (e Epoch) ModSlot(x Slot) Epoch {
-	return Epoch(uint64(e) % uint64(x))
+// SafeMod returns result of `epoch % x`.
+// In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
+func (e Epoch) SafeMod(x uint64) (Epoch, error) {
+	res, err := Mod64(uint64(e), x)
+	return Epoch(res), err
 }
 
 // HashTreeRoot returns calculated hash root.
