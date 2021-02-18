@@ -1,7 +1,17 @@
 package types
 
+import (
+	fmt "fmt"
+
+	fssz "github.com/ferranbt/fastssz"
+)
+
+var _ fssz.HashRoot = (Slot)(0)
+var _ fssz.Marshaler = (*Slot)(nil)
+var _ fssz.Unmarshaler = (*Slot)(nil)
+
 // Slot represents a single slot.
-type Slot SSZUint64
+type Slot uint64
 
 // Mul multiplies slot by x.
 // In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
@@ -146,4 +156,44 @@ func (s Slot) ModSlot(x Slot) Slot {
 // In case of arithmetic issues (overflow/underflow/div by zero) error is returned.
 func (s Slot) SafeModSlot(x Slot) (Slot, error) {
 	return s.SafeMod(uint64(x))
+}
+
+// HashTreeRoot returns calculated hash root.
+func (s Slot) HashTreeRoot() ([32]byte, error) {
+	return fssz.HashWithDefaultHasher(s)
+}
+
+// HashWithDefaultHasher hashes a HashRoot object with a Hasher from the default HasherPool.
+func (s Slot) HashTreeRootWith(hh *fssz.Hasher) error {
+	hh.PutUint64(uint64(s))
+	return nil
+}
+
+// UnmarshalSSZ deserializes the provided bytes buffer into the slot object.
+func (s *Slot) UnmarshalSSZ(buf []byte) error {
+	if len(buf) != s.SizeSSZ() {
+		return fmt.Errorf("expected buffer of length %d received %d", s.SizeSSZ(), len(buf))
+	}
+	*s = Slot(fssz.UnmarshallUint64(buf))
+	return nil
+}
+
+// MarshalSSZTo marshals slot with the provided byte slice.
+func (s *Slot) MarshalSSZTo(dst []byte) ([]byte, error) {
+	marshalled, err := s.MarshalSSZ()
+	if err != nil {
+		return nil, err
+	}
+	return append(dst, marshalled...), nil
+}
+
+// MarshalSSZ marshals slot into a serialized object.
+func (s *Slot) MarshalSSZ() ([]byte, error) {
+	marshalled := fssz.MarshalUint64([]byte{}, uint64(*s))
+	return marshalled, nil
+}
+
+// SizeSSZ returns the size of the serialized object.
+func (s *Slot) SizeSSZ() int {
+	return 8
 }

@@ -1,7 +1,17 @@
 package types
 
+import (
+	"fmt"
+
+	fssz "github.com/ferranbt/fastssz"
+)
+
+var _ fssz.HashRoot = (Epoch)(0)
+var _ fssz.Marshaler = (*Epoch)(nil)
+var _ fssz.Unmarshaler = (*Epoch)(nil)
+
 // Epoch represents a single epoch.
-type Epoch SSZUint64
+type Epoch uint64
 
 // Mul multiplies epoch by x.
 // In case of arithmetic issues (overflow/underflow/div by zero) panic is thrown.
@@ -98,4 +108,44 @@ func (e Epoch) Mod(x uint64) Epoch {
 func (e Epoch) SafeMod(x uint64) (Epoch, error) {
 	res, err := Mod64(uint64(e), x)
 	return Epoch(res), err
+}
+
+// HashTreeRoot returns calculated hash root.
+func (e Epoch) HashTreeRoot() ([32]byte, error) {
+	return fssz.HashWithDefaultHasher(e)
+}
+
+// HashWithDefaultHasher hashes a HashRoot object with a Hasher from the default HasherPool.
+func (e Epoch) HashTreeRootWith(hh *fssz.Hasher) error {
+	hh.PutUint64(uint64(e))
+	return nil
+}
+
+// UnmarshalSSZ deserializes the provided bytes buffer into the epoch object.
+func (e *Epoch) UnmarshalSSZ(buf []byte) error {
+	if len(buf) != e.SizeSSZ() {
+		return fmt.Errorf("expected buffer of length %d received %d", e.SizeSSZ(), len(buf))
+	}
+	*e = Epoch(fssz.UnmarshallUint64(buf))
+	return nil
+}
+
+// MarshalSSZTo marshals epoch with the provided byte slice.
+func (e *Epoch) MarshalSSZTo(dst []byte) ([]byte, error) {
+	marshalled, err := e.MarshalSSZ()
+	if err != nil {
+		return nil, err
+	}
+	return append(dst, marshalled...), nil
+}
+
+// MarshalSSZ marshals epoch into a serialized object.
+func (e *Epoch) MarshalSSZ() ([]byte, error) {
+	marshalled := fssz.MarshalUint64([]byte{}, uint64(*e))
+	return marshalled, nil
+}
+
+// SizeSSZ returns the size of the serialized object.
+func (e *Epoch) SizeSSZ() int {
+	return 8
 }
