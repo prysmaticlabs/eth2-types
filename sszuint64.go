@@ -1,17 +1,23 @@
 package types
 
 import (
-	fmt "fmt"
+	"encoding/binary"
+	"fmt"
 
 	fssz "github.com/ferranbt/fastssz"
 )
 
-var _ fssz.HashRoot = (SSZUint64)(0)
-var _ fssz.Marshaler = (*SSZUint64)(nil)
-var _ fssz.Unmarshaler = (*SSZUint64)(nil)
+var _ fssz.HashRoot = (Epoch)(0)
+var _ fssz.Marshaler = (*Epoch)(nil)
+var _ fssz.Unmarshaler = (*Epoch)(nil)
 
 // SSZUint64 is a uint64 type that satisfies the fast-ssz interface.
 type SSZUint64 uint64
+
+// SizeSSZ returns the size of the serialized representation.
+func (s *SSZUint64) SizeSSZ() int {
+	return 8
+}
 
 // MarshalSSZTo marshals the uint64 with the provided byte slice.
 func (s *SSZUint64) MarshalSSZTo(dst []byte) ([]byte, error) {
@@ -38,17 +44,18 @@ func (s *SSZUint64) UnmarshalSSZ(buf []byte) error {
 }
 
 // HashTreeRoot returns calculated hash root.
-func (s SSZUint64) HashTreeRoot() ([32]byte, error) {
-	return fssz.HashWithDefaultHasher(s)
+func (s *SSZUint64) HashTreeRoot() ([32]byte, error) {
+	buf := make([]byte, 8)
+	binary.LittleEndian.PutUint64(buf, uint64(*s))
+	var root [32]byte
+	copy(root[:], buf)
+	return root, nil
 }
 
 // HashWithDefaultHasher hashes a HashRoot object with a Hasher from the default HasherPool.
-func (s SSZUint64) HashTreeRootWith(hh *fssz.Hasher) error {
-	hh.PutUint64(uint64(s))
+func (s *SSZUint64) HashTreeRootWith(hh *fssz.Hasher) error {
+	indx := hh.Index()
+	hh.PutUint64(uint64(*s))
+	hh.Merkleize(indx)
 	return nil
-}
-
-// SizeSSZ returns the size of the serialized representation.
-func (s *SSZUint64) SizeSSZ() int {
-	return 8
 }
