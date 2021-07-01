@@ -1,9 +1,9 @@
 package types
 
 import (
-"fmt"
+	"fmt"
 
-fssz "github.com/ferranbt/fastssz"
+	fssz "github.com/ferranbt/fastssz"
 )
 
 var _ fssz.HashRoot = (Domain)([32]byte{})
