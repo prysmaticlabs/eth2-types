@@ -6,12 +6,12 @@ import (
 	fssz "github.com/ferranbt/fastssz"
 )
 
-var _ fssz.HashRoot = (Domain)([32]byte{})
+var _ fssz.HashRoot = (Domain)([]byte{})
 var _ fssz.Marshaler = (*Domain)(nil)
 var _ fssz.Unmarshaler = (*Domain)(nil)
 
 // Domain represents a 32 bytes domain object in Ethereum beacon chain consensus.
-type Domain [32]byte
+type Domain []byte
 
 // HashTreeRoot returns calculated hash root.
 func (e Domain) HashTreeRoot() ([32]byte, error) {
@@ -46,7 +46,7 @@ func (e *Domain) MarshalSSZTo(dst []byte) ([]byte, error) {
 
 // MarshalSSZ marshals Domain into a serialized object.
 func (e *Domain) MarshalSSZ() ([]byte, error) {
-	return e[:], nil
+	return *e, nil
 }
 
 // SizeSSZ returns the size of the serialized object.
