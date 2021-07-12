@@ -84,7 +84,7 @@ func TestDomain_MarshalSSZ(t *testing.T) {
 
 func TestDomain_SizeSSZ(t *testing.T) {
 	d := Domain{}
-	if d.SizeSSZ() !=32 {
+	if d.SizeSSZ() != 32 {
 		t.Errorf("Wrong SSZ size. Expected %v vs actual %v", 32, d.SizeSSZ())
 	}
 }
