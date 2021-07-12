@@ -1,7 +1,6 @@
 package types_test
 
 import (
-	"encoding/hex"
 	"reflect"
 	"strings"
 	"testing"
@@ -47,23 +46,23 @@ func TestSSZUint64(t *testing.T) {
 	}{
 		{
 			name:            "max",
-			serializedBytes: hexDecodeOrDie(t, "ffffffffffffffff"),
+			serializedBytes: types.HexDecodeOrDie(t, "ffffffffffffffff"),
 			actualValue:     18446744073709551615,
-			root:            hexDecodeOrDie(t, "ffffffffffffffff000000000000000000000000000000000000000000000000"),
+			root:            types.HexDecodeOrDie(t, "ffffffffffffffff000000000000000000000000000000000000000000000000"),
 			wantErr:         false,
 		},
 		{
 			name:            "random",
-			serializedBytes: hexDecodeOrDie(t, "357c8de9d7204577"),
+			serializedBytes: types.HexDecodeOrDie(t, "357c8de9d7204577"),
 			actualValue:     8594311575614880821,
-			root:            hexDecodeOrDie(t, "357c8de9d7204577000000000000000000000000000000000000000000000000"),
+			root:            types.HexDecodeOrDie(t, "357c8de9d7204577000000000000000000000000000000000000000000000000"),
 			wantErr:         false,
 		},
 		{
 			name:            "zero",
-			serializedBytes: hexDecodeOrDie(t, "0000000000000000"),
+			serializedBytes: types.HexDecodeOrDie(t, "0000000000000000"),
 			actualValue:     0,
-			root:            hexDecodeOrDie(t, "0000000000000000000000000000000000000000000000000000000000000000"),
+			root:            types.HexDecodeOrDie(t, "0000000000000000000000000000000000000000000000000000000000000000"),
 			wantErr:         false,
 		},
 	}
@@ -94,12 +93,4 @@ func TestSSZUint64(t *testing.T) {
 			}
 		})
 	}
-}
-
-func hexDecodeOrDie(t *testing.T, str string) []byte {
-	decoded, err := hex.DecodeString(str)
-	if err != nil {
-		t.Errorf("hex.DecodeString(%s) unexpected error = %v", str, err)
-	}
-	return decoded
 }
