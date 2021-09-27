@@ -39,16 +39,13 @@ func (e *Domain) UnmarshalSSZ(buf []byte) error {
 
 // MarshalSSZTo marshals Domain with the provided byte slice.
 func (e *Domain) MarshalSSZTo(dst []byte) ([]byte, error) {
-	marshalled, err := e.MarshalSSZ()
-	if err != nil {
-		return nil, err
-	}
-	return append(dst, marshalled...), nil
+	dst = append(dst, (*e)[:]...)
+	return dst, nil
 }
 
 // MarshalSSZ marshals Domain into a serialized object.
 func (e *Domain) MarshalSSZ() ([]byte, error) {
-	return *e, nil
+	return fssz.MarshalSSZ(e)
 }
 
 // SizeSSZ returns the size of the serialized object.

@@ -132,17 +132,13 @@ func (e *Epoch) UnmarshalSSZ(buf []byte) error {
 
 // MarshalSSZTo marshals epoch with the provided byte slice.
 func (e *Epoch) MarshalSSZTo(dst []byte) ([]byte, error) {
-	marshalled, err := e.MarshalSSZ()
-	if err != nil {
-		return nil, err
-	}
-	return append(dst, marshalled...), nil
+	dst = fssz.MarshalUint64(dst, uint64(*e))
+	return dst, nil
 }
 
 // MarshalSSZ marshals epoch into a serialized object.
 func (e *Epoch) MarshalSSZ() ([]byte, error) {
-	marshalled := fssz.MarshalUint64([]byte{}, uint64(*e))
-	return marshalled, nil
+	return fssz.MarshalSSZ(e)
 }
 
 // SizeSSZ returns the size of the serialized object.
