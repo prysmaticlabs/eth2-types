@@ -61,17 +61,13 @@ func (v *ValidatorIndex) UnmarshalSSZ(buf []byte) error {
 
 // MarshalSSZTo marshals validator index with the provided byte slice.
 func (v *ValidatorIndex) MarshalSSZTo(dst []byte) ([]byte, error) {
-	marshalled, err := v.MarshalSSZ()
-	if err != nil {
-		return nil, err
-	}
-	return append(dst, marshalled...), nil
+	dst = fssz.MarshalUint64(dst, uint64(*v))
+	return dst, nil
 }
 
 // MarshalSSZ marshals validator index into a serialized object.
 func (v *ValidatorIndex) MarshalSSZ() ([]byte, error) {
-	marshalled := fssz.MarshalUint64([]byte{}, uint64(*v))
-	return marshalled, nil
+	return fssz.MarshalSSZ(v)
 }
 
 // SizeSSZ returns the size of the serialized object.

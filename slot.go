@@ -180,17 +180,13 @@ func (s *Slot) UnmarshalSSZ(buf []byte) error {
 
 // MarshalSSZTo marshals slot with the provided byte slice.
 func (s *Slot) MarshalSSZTo(dst []byte) ([]byte, error) {
-	marshalled, err := s.MarshalSSZ()
-	if err != nil {
-		return nil, err
-	}
-	return append(dst, marshalled...), nil
+	dst = fssz.MarshalUint64(dst, uint64(*s))
+	return dst, nil
 }
 
 // MarshalSSZ marshals slot into a serialized object.
 func (s *Slot) MarshalSSZ() ([]byte, error) {
-	marshalled := fssz.MarshalUint64([]byte{}, uint64(*s))
-	return marshalled, nil
+	return fssz.MarshalSSZ(s)
 }
 
 // SizeSSZ returns the size of the serialized object.

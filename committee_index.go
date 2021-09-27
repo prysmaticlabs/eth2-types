@@ -35,17 +35,13 @@ func (c *CommitteeIndex) UnmarshalSSZ(buf []byte) error {
 
 // MarshalSSZTo marshals committee index with the provided byte slice.
 func (c *CommitteeIndex) MarshalSSZTo(dst []byte) ([]byte, error) {
-	marshalled, err := c.MarshalSSZ()
-	if err != nil {
-		return nil, err
-	}
-	return append(dst, marshalled...), nil
+	dst = fssz.MarshalUint64(dst, uint64(*c))
+	return dst, nil
 }
 
 // MarshalSSZ marshals committee index into a serialized object.
 func (c *CommitteeIndex) MarshalSSZ() ([]byte, error) {
-	marshalled := fssz.MarshalUint64([]byte{}, uint64(*c))
-	return marshalled, nil
+	return fssz.MarshalSSZ(c)
 }
 
 // SizeSSZ returns the size of the serialized object.
